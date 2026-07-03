@@ -1,0 +1,7 @@
+# robots.txt for Mid-South Environmental Services
+# https://www.mses.online
+
+User-agent: *
+Allow: /
+
+Sitemap: https://www.mses.online/sitemap.xml

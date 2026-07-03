@@ -14,7 +14,7 @@ function Home() {
       {/* Under Hero Image Section */}
       <section className="underhero-section">
         <picture>
-          <source media="(max-width: 768px)" srcSet="/faviconshare.png.jpeg" />
+          <source media="(max-width: 768px)" srcSet="/photos/projects/heromobile.png" />
           <img src="/underhero1.png" alt="Mid-South Environmental Services" className="underhero-image" />
         </picture>
       </section>

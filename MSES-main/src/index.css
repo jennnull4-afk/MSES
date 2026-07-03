@@ -218,11 +218,7 @@ nav a.active {
   }
   
   .header-logo {
-    display: none;
-  }
-  
-  .header-logo img {
-    height: 56px;
+    display: none !important;
   }
   
   .header-phone {

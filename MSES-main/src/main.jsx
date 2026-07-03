@@ -4,8 +4,8 @@ import './index.css'
 import App from './App.jsx'
 import { initClarity } from './lib/clarity.js'
 
-// Standardised env var: VITE_GA4_MEASUREMENT_ID
-const GA4_MEASUREMENT_ID = import.meta.env.VITE_GA4_MEASUREMENT_ID;
+// Env var: VITE_GA_MEASUREMENT_ID (see ENVIRONMENT.md and .env.example)
+const GA4_MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID;
 
 if (GA4_MEASUREMENT_ID) {
   const script = document.createElement('script');

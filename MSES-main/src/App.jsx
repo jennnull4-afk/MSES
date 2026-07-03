@@ -13,10 +13,10 @@ const ContactUs   = lazy(() => import('./pages/ContactUs'));
 const PastProjects = lazy(() => import('./pages/PastProjects'));
 const NotFound    = lazy(() => import('./pages/NotFound'));
 
-// GA4 page-view tracking hook — standardised on VITE_GA4_MEASUREMENT_ID
+// GA4 page-view tracking hook — env var: VITE_GA_MEASUREMENT_ID
 function useGA4PageTracking() {
   const location = useLocation();
-  const GA4_MEASUREMENT_ID = import.meta.env.VITE_GA4_MEASUREMENT_ID;
+  const GA4_MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID;
 
   useEffect(() => {
     if (GA4_MEASUREMENT_ID && typeof window.gtag === 'function') {

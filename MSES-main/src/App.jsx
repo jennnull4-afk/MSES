@@ -32,25 +32,34 @@ function AppLayout({ children }) {
   return (
     <>
       {location.pathname === '/' ? (
-        <section className="top-hero">
-          <div className="top-hero-image-wrapper">
-            <img src="/heronow.png" alt="Mid-South Environmental Services — 24/7 Environmental Emergency Response" className="top-hero-image" />
-            {/* Logo → Home */}
-            <Link to="/" className="invisible-hero-link" style={{ left: '0%', width: '18%', height: '14%' }} aria-label="Home" />
-            {/* Nav: HOME */}
-            <Link to="/" className="invisible-hero-link" style={{ left: '20%', width: '11%', height: '14%' }} aria-label="Home" />
-            {/* Nav: ABOUT US */}
-            <Link to="/about" className="invisible-hero-link" style={{ left: '33%', width: '11%', height: '14%' }} aria-label="About Us" />
-            {/* Nav: SERVICES */}
-            <Link to="/services" className="invisible-hero-link" style={{ left: '45%', width: '11%', height: '14%' }} aria-label="Services" />
-            {/* Nav: CONTACT US */}
-            <Link to="/contact" className="invisible-hero-link" style={{ left: '57%', width: '13%', height: '14%' }} aria-label="Contact Us" />
-            {/* Phone box top-right */}
-            <a href="tel:8446374855" className="invisible-hero-link" style={{ left: '76%', width: '24%', height: '14%' }} aria-label="Call 844-637-4855" />
-            {/* VIEW SERVICES CTA button bottom-left */}
-            <Link to="/services" className="invisible-hero-link" style={{ left: '3%', top: '74%', width: '24%', height: '17%' }} aria-label="View Services" />
+        <>
+          {/* Mobile-only nav on homepage */}
+          <div className="mobile-home-nav">
+            <Nav />
           </div>
-        </section>
+          <section className="top-hero">
+            <div className="top-hero-image-wrapper">
+              {/* Desktop hero */}
+              <img src="/heronow.png" alt="Mid-South Environmental Services — 24/7 Environmental Emergency Response" className="top-hero-image hero-desktop" />
+              {/* Mobile hero */}
+              <img src="/photos/projects/heromobile.png" alt="Mid-South Environmental Services — 24/7 Environmental Emergency Response" className="top-hero-image hero-mobile" />
+              {/* Logo → Home */}
+              <Link to="/" className="invisible-hero-link" style={{ left: '0%', width: '18%', height: '14%' }} aria-label="Home" />
+              {/* Nav: HOME */}
+              <Link to="/" className="invisible-hero-link" style={{ left: '20%', width: '11%', height: '14%' }} aria-label="Home" />
+              {/* Nav: ABOUT US */}
+              <Link to="/about" className="invisible-hero-link" style={{ left: '33%', width: '11%', height: '14%' }} aria-label="About Us" />
+              {/* Nav: SERVICES */}
+              <Link to="/services" className="invisible-hero-link" style={{ left: '45%', width: '11%', height: '14%' }} aria-label="Services" />
+              {/* Nav: CONTACT US */}
+              <Link to="/contact" className="invisible-hero-link" style={{ left: '57%', width: '13%', height: '14%' }} aria-label="Contact Us" />
+              {/* Phone box top-right */}
+              <a href="tel:8446374855" className="invisible-hero-link" style={{ left: '76%', width: '24%', height: '14%' }} aria-label="Call 844-637-4855" />
+              {/* VIEW SERVICES CTA button bottom-left */}
+              <Link to="/services" className="invisible-hero-link" style={{ left: '3%', top: '74%', width: '24%', height: '17%' }} aria-label="View Services" />
+            </div>
+          </section>
+        </>
       ) : (
         <Nav />
       )}

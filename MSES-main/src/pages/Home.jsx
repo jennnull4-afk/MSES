@@ -13,10 +13,7 @@ function Home() {
     <div className="page page-home">
       {/* Under Hero Image Section */}
       <section className="underhero-section">
-        <picture>
-          <source media="(max-width: 768px)" srcSet="/photos/projects/heromobile.png" />
-          <img src="/underhero1.png" alt="Mid-South Environmental Services" className="underhero-image" />
-        </picture>
+        <img src="/underhero1.png" alt="Mid-South Environmental Services" className="underhero-image" />
       </section>
 
       {/* Services Section - Unified Photo Grid with Descriptions */}

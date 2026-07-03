@@ -11,6 +11,8 @@ function Home() {
 
   return (
     <div className="page page-home">
+      {/* Visually hidden H1 — hero image carries the visual heading; this serves SEO/screen readers */}
+      <h1 className="visually-hidden">Mid-South Environmental Services — 24/7 Environmental Emergency Response</h1>
       {/* Under Hero Image Section */}
       <section className="underhero-section">
         <img src="/underhero1.png" alt="Mid-South Environmental Services" className="underhero-image" />

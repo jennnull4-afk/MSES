@@ -5,6 +5,15 @@ import { trackContactFormSubmission, trackPhoneClick } from '../lib/analytics';
 // Email validation regex
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+// Field length limits (mirrored server-side in api/contact.js)
+const FIELD_LIMITS = {
+  name: 100,
+  company: 150,
+  email: 254,
+  phone: 20,
+  message: 3000,
+};
+
 function ContactUs() {
   useSEO({
     title: 'Contact Us | MSES',
@@ -17,7 +26,9 @@ function ContactUs() {
     company: '',
     email: '',
     phone: '',
-    message: ''
+    message: '',
+    // Honeypot — must stay empty; bots fill it, real users don't see it
+    website: '',
   });
   const [status, setStatus] = useState({ type: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -25,7 +36,6 @@ function ContactUs() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    // Clear status when user starts typing again
     if (status.message) {
       setStatus({ type: '', message: '' });
     }
@@ -40,6 +50,10 @@ function ContactUs() {
       setStatus({ type: 'error', message: 'Please enter your name.' });
       return false;
     }
+    if (trimmedName.length > FIELD_LIMITS.name) {
+      setStatus({ type: 'error', message: 'Name is too long.' });
+      return false;
+    }
     if (!trimmedEmail) {
       setStatus({ type: 'error', message: 'Please enter your email address.' });
       return false;
@@ -52,32 +66,38 @@ function ContactUs() {
       setStatus({ type: 'error', message: 'Please enter a message.' });
       return false;
     }
+    if (trimmedMessage.length > FIELD_LIMITS.message) {
+      setStatus({ type: 'error', message: `Message must be ${FIELD_LIMITS.message} characters or fewer.` });
+      return false;
+    }
     return true;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Prevent double submission
+
     if (isSubmitting) return;
-    
-    // Validate form
     if (!validateForm()) return;
+
+    // Honeypot check — silently succeed if filled (bot behaviour)
+    if (formData.website) {
+      setStatus({ type: 'success', message: 'Message sent successfully. We will respond as promptly as possible.' });
+      return;
+    }
 
     setIsSubmitting(true);
     setStatus({ type: '', message: '' });
 
     try {
-      // Prepare sanitized form data
       const submitData = {
         name: formData.name.trim(),
         company: formData.company.trim() || 'Not provided',
         email: formData.email.trim(),
         phone: formData.phone.trim() || 'Not provided',
-        message: formData.message.trim()
+        message: formData.message.trim(),
+        website: formData.website, // honeypot forwarded for server-side check
       };
 
-      // Submit to Vercel serverless function
       const response = await fetch('/api/contact', {
         method: 'POST',
         body: JSON.stringify(submitData),
@@ -92,14 +112,7 @@ function ContactUs() {
       if (response.ok && result.success) {
         setStatus({ type: 'success', message: 'Message sent successfully. We will respond as promptly as possible.' });
         trackContactFormSubmission('success');
-        // Reset form
-        setFormData({
-          name: '',
-          company: '',
-          email: '',
-          phone: '',
-          message: ''
-        });
+        setFormData({ name: '', company: '', email: '', phone: '', message: '', website: '' });
       } else {
         trackContactFormSubmission('error');
         throw new Error(result.message || 'Submission failed');
@@ -107,9 +120,9 @@ function ContactUs() {
     } catch (error) {
       console.error('Form submission error:', error);
       trackContactFormSubmission('error');
-      setStatus({ 
-        type: 'error', 
-        message: 'Unable to send message. Please try again or call our emergency line.' 
+      setStatus({
+        type: 'error',
+        message: 'Unable to send message. Please try again or call our emergency line.'
       });
     } finally {
       setIsSubmitting(false);
@@ -131,77 +144,101 @@ function ContactUs() {
       <section className="contact-form-section">
         <h2>General Inquiries</h2>
         <form className="contact-form" onSubmit={handleSubmit} noValidate>
+
+          {/* Honeypot field — hidden from real users, detected server-side */}
+          <div aria-hidden="true" style={{ position: 'absolute', left: '-9999px', opacity: 0, height: 0, overflow: 'hidden' }}>
+            <label htmlFor="website">Website</label>
+            <input
+              type="text"
+              id="website"
+              name="website"
+              value={formData.website}
+              onChange={handleChange}
+              tabIndex={-1}
+              autoComplete="off"
+            />
+          </div>
+
           <div className="form-group">
-            <label htmlFor="name">Name</label>
-            <input 
-              type="text" 
-              id="name" 
-              name="name" 
+            <label htmlFor="name">Name <span aria-hidden="true">*</span></label>
+            <input
+              type="text"
+              id="name"
+              name="name"
               value={formData.name}
               onChange={handleChange}
-              required 
+              maxLength={FIELD_LIMITS.name}
+              required
               disabled={isSubmitting}
+              autoComplete="name"
             />
           </div>
           <div className="form-group">
             <label htmlFor="company">Company</label>
-            <input 
-              type="text" 
-              id="company" 
-              name="company" 
+            <input
+              type="text"
+              id="company"
+              name="company"
               value={formData.company}
               onChange={handleChange}
+              maxLength={FIELD_LIMITS.company}
               disabled={isSubmitting}
+              autoComplete="organization"
             />
           </div>
           <div className="form-group">
-            <label htmlFor="email">Email</label>
-            <input 
-              type="email" 
-              id="email" 
-              name="email" 
+            <label htmlFor="email">Email <span aria-hidden="true">*</span></label>
+            <input
+              type="email"
+              id="email"
+              name="email"
               value={formData.email}
               onChange={handleChange}
-              required 
+              maxLength={FIELD_LIMITS.email}
+              required
               disabled={isSubmitting}
+              autoComplete="email"
             />
           </div>
           <div className="form-group">
             <label htmlFor="phone">Phone</label>
-            <input 
-              type="tel" 
-              id="phone" 
-              name="phone" 
+            <input
+              type="tel"
+              id="phone"
+              name="phone"
               value={formData.phone}
               onChange={handleChange}
+              maxLength={FIELD_LIMITS.phone}
               disabled={isSubmitting}
+              autoComplete="tel"
             />
           </div>
           <div className="form-group">
-            <label htmlFor="message">Message</label>
-            <textarea 
-              id="message" 
-              name="message" 
-              rows="5" 
+            <label htmlFor="message">Message <span aria-hidden="true">*</span></label>
+            <textarea
+              id="message"
+              name="message"
+              rows="5"
               value={formData.message}
               onChange={handleChange}
+              maxLength={FIELD_LIMITS.message}
               required
               disabled={isSubmitting}
-            ></textarea>
+            />
           </div>
-          
+
           {status.message && (
-            <div className={`form-status form-status-${status.type}`} role="alert">
+            <div className={`form-status form-status-${status.type}`} role="alert" aria-live="polite">
               {status.message}
             </div>
           )}
-          
-          <button 
-            type="submit" 
+
+          <button
+            type="submit"
             className="btn btn-secondary"
             disabled={isSubmitting}
           >
-            {isSubmitting ? 'Sending...' : 'Send Message'}
+            {isSubmitting ? 'Sending…' : 'Send Message'}
           </button>
         </form>
         <p className="form-note">For urgent matters, please call our 24/7 emergency line. For general inquiries submitted via this form, we aim to respond as promptly as possible, typically within one business day.</p>

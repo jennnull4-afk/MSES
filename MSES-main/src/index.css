@@ -9,6 +9,7 @@
   --color-gray-200: #e5e7eb;
   --color-gray-300: #d1d5db;
   --color-gray-500: #6b7280;
+  --color-gray-600: #4b5563;
   --color-gray-700: #374151;
   --color-gray-900: #111827;
 
@@ -30,6 +31,44 @@
 
 * {
   box-sizing: border-box;
+}
+
+/* ========================================
+   ACCESSIBILITY — Utilities
+   ======================================== */
+/* Visually hidden but available to screen readers */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Skip Navigation Link */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 1rem;
+  z-index: 9999;
+  padding: 0.75rem 1.25rem;
+  background-color: var(--color-accent);
+  color: #000000;
+  font-weight: 700;
+  font-size: 0.9375rem;
+  border-radius: 0 0 6px 6px;
+  text-decoration: none;
+  transition: top 0.1s ease;
+}
+
+.skip-link:focus {
+  top: 0;
+  outline: 3px solid #000;
+  outline-offset: 2px;
 }
 
 body {
@@ -1263,6 +1302,26 @@ section:last-child {
   background: transparent;
 }
 
+/* Make invisible hero links visible when focused (keyboard navigation) */
+.invisible-hero-link:focus {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 2px;
+  background: rgba(166, 198, 58, 0.15);
+}
+
+.hero-nav-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.hero-nav-overlay .invisible-hero-link {
+  pointer-events: all;
+}
+
 .page-home .hero-section {
   margin-left: 0;
   width: 100%;
@@ -2166,15 +2225,13 @@ section:last-child {
   font-size: 0.875rem;
 }
 
-/* Site Footer */
+/* ========================================
+   SITE FOOTER — HTML rebuild
+   ======================================== */
 .site-footer {
   margin-top: 4rem;
-  line-height: 0;
-}
-
-.footer-image {
-  width: 100%;
-  display: block;
+  background-color: #060F1E;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .footer-inner {
@@ -2199,13 +2256,26 @@ section:last-child {
 .footer-logo img {
   height: 40px;
   width: auto;
+  filter: brightness(0) invert(1);
 }
 
 .footer-tagline {
   font-size: 0.875rem;
   line-height: 1.6;
-  color: var(--color-primary);
-  margin: 0;
+  color: rgba(255, 255, 255, 0.65);
+  margin: 0 0 0.75rem;
+}
+
+.footer-address {
+  font-style: normal;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.footer-address-line {
+  font-size: 0.8125rem;
+  color: rgba(255, 255, 255, 0.45);
 }
 
 .footer-contact {
@@ -2216,15 +2286,17 @@ section:last-child {
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--color-primary);
+  color: rgba(255, 255, 255, 0.45);
   margin: 0 0 0.25rem;
+  font-weight: 600;
 }
 
 .footer-phone {
   font-size: 1.25rem;
   font-weight: 700;
-  color: var(--color-primary);
+  color: #ffffff;
   text-decoration: none;
+  display: block;
   transition: color 0.15s ease;
 }
 
@@ -2232,40 +2304,52 @@ section:last-child {
   color: var(--color-accent);
 }
 
-.footer-social {
-  display: flex;
-  gap: 0.75rem;
-  align-items: center;
+.footer-service-note {
+  font-size: 0.8125rem;
+  color: rgba(255, 255, 255, 0.45);
+  margin: 0.5rem 0 0;
 }
 
-.footer-social-link {
+/* Footer navigation column */
+.footer-nav {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  color: var(--color-primary);
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.footer-nav-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(255, 255, 255, 0.45);
+  font-weight: 600;
+  margin: 0 0 0.25rem;
+}
+
+.footer-nav a {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  font-weight: 400;
   transition: color 0.15s ease;
+  padding: 0;
 }
 
-.footer-social-link:hover {
+.footer-nav a:hover,
+.footer-nav a.active {
   color: var(--color-accent);
-}
-
-.footer-social-link svg {
-  width: 20px;
-  height: 20px;
+  background: transparent;
 }
 
 .footer-bottom {
-  border-top: 1px solid var(--color-gray-200);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
   padding: 1.25rem 2rem;
   text-align: center;
 }
 
 .footer-bottom p {
   font-size: 0.8125rem;
-  color: var(--color-primary);
+  color: rgba(255, 255, 255, 0.35);
   margin: 0;
 }
 
@@ -2285,8 +2369,12 @@ section:last-child {
     text-align: center;
   }
 
-  .footer-social {
-    justify-content: center;
+  .footer-nav {
+    align-items: center;
+  }
+
+  .footer-address {
+    align-items: center;
   }
 }
 
@@ -2687,4 +2775,96 @@ section:last-child {
   .projects-cta p {
     font-size: 1rem;
   }
+}
+
+/* ========================================
+   PAGE LOADING — Suspense fallback
+   ======================================== */
+.page-loading {
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.875rem;
+  letter-spacing: 0.05em;
+}
+
+/* ========================================
+   404 NOT FOUND PAGE
+   ======================================== */
+.page-notfound {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 70vh;
+  padding: 2rem;
+}
+
+.notfound-section {
+  text-align: center;
+  max-width: 600px;
+}
+
+.notfound-code {
+  font-size: 6rem;
+  font-weight: 700;
+  color: var(--color-accent);
+  line-height: 1;
+  margin: 0 0 1rem;
+}
+
+.notfound-message {
+  font-size: 1.125rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 1rem;
+}
+
+.notfound-cta-text {
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 0.75rem;
+}
+
+.notfound-phone {
+  display: inline-block;
+  margin: 0.5rem 0 2rem;
+  font-size: 1.25rem;
+}
+
+.notfound-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+@media (max-width: 480px) {
+  .notfound-code { font-size: 4rem; }
+  .notfound-links { flex-direction: column; align-items: center; }
+}
+
+/* ========================================
+   ERROR BOUNDARY FALLBACK
+   ======================================== */
+.error-boundary-fallback {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 70vh;
+  padding: 2rem;
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.error-boundary-fallback h1 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.error-boundary-fallback p {
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 1.5rem;
 }

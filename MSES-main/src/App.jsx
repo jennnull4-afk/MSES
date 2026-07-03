@@ -1,20 +1,22 @@
 import { BrowserRouter, Routes, Route, useLocation, Link } from 'react-router-dom';
-import { useEffect } from 'react';
-
-// Nav removed from top header per design — hero image placed at top instead
+import { lazy, Suspense, useEffect } from 'react';
+import ErrorBoundary from './components/ErrorBoundary';
 import Nav from './components/Nav';
 import Footer from './components/Footer';
-import Home from './pages/Home';
-import AboutUs from './pages/AboutUs';
-import Services from './pages/Services';
-import Locations from './pages/Locations';
-import ContactUs from './pages/ContactUs';
-import PastProjects from './pages/PastProjects';
 
-// GA4 Analytics Hook
+// Route-level code splitting — each page loads only when first visited
+const Home        = lazy(() => import('./pages/Home'));
+const AboutUs     = lazy(() => import('./pages/AboutUs'));
+const Services    = lazy(() => import('./pages/Services'));
+const Locations   = lazy(() => import('./pages/Locations'));
+const ContactUs   = lazy(() => import('./pages/ContactUs'));
+const PastProjects = lazy(() => import('./pages/PastProjects'));
+const NotFound    = lazy(() => import('./pages/NotFound'));
+
+// GA4 page-view tracking hook — standardised on VITE_GA4_MEASUREMENT_ID
 function useGA4PageTracking() {
   const location = useLocation();
-  const GA4_MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID || import.meta.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
+  const GA4_MEASUREMENT_ID = import.meta.env.VITE_GA4_MEASUREMENT_ID;
 
   useEffect(() => {
     if (GA4_MEASUREMENT_ID && typeof window.gtag === 'function') {
@@ -31,39 +33,54 @@ function AppLayout({ children }) {
 
   return (
     <>
+      {/* Skip-to-content link — first focusable element for keyboard/screen-reader users */}
+      <a href="#main-content" className="skip-link">Skip to main content</a>
+
       {location.pathname === '/' ? (
         <>
-          {/* Mobile-only nav on homepage */}
+          {/* Real nav shown on mobile; desktop uses hero image overlay links below */}
           <div className="mobile-home-nav">
             <Nav />
           </div>
-          <section className="top-hero">
+          <section className="top-hero" aria-label="Homepage hero image">
             <div className="top-hero-image-wrapper">
-              {/* Desktop hero */}
-              <img src="/heronow.png" alt="Mid-South Environmental Services — 24/7 Environmental Emergency Response" className="top-hero-image hero-desktop" />
+              {/* Desktop hero — fetchpriority signals LCP image to browser */}
+              <img
+                src="/heronow.png"
+                alt="Mid-South Environmental Services — 24/7 Environmental Emergency Response"
+                className="top-hero-image hero-desktop"
+                fetchpriority="high"
+              />
               {/* Mobile hero */}
-              <img src="/photos/projects/heromobile.png" alt="Mid-South Environmental Services — 24/7 Environmental Emergency Response" className="top-hero-image hero-mobile" />
-              {/* Logo → Home */}
-              <Link to="/" className="invisible-hero-link" style={{ left: '0%', width: '18%', height: '14%' }} aria-label="Home" />
-              {/* Nav: HOME */}
-              <Link to="/" className="invisible-hero-link" style={{ left: '20%', width: '11%', height: '14%' }} aria-label="Home" />
-              {/* Nav: ABOUT US */}
-              <Link to="/about" className="invisible-hero-link" style={{ left: '33%', width: '11%', height: '14%' }} aria-label="About Us" />
-              {/* Nav: SERVICES */}
-              <Link to="/services" className="invisible-hero-link" style={{ left: '45%', width: '11%', height: '14%' }} aria-label="Services" />
-              {/* Nav: CONTACT US */}
-              <Link to="/contact" className="invisible-hero-link" style={{ left: '57%', width: '13%', height: '14%' }} aria-label="Contact Us" />
-              {/* Phone box top-right */}
-              <a href="tel:8446374855" className="invisible-hero-link" style={{ left: '76%', width: '24%', height: '14%' }} aria-label="Call 844-637-4855" />
-              {/* VIEW SERVICES CTA button bottom-left */}
-              <Link to="/services" className="invisible-hero-link" style={{ left: '3%', top: '74%', width: '24%', height: '17%' }} aria-label="View Services" />
+              <img
+                src="/photos/projects/heromobile.png"
+                alt="Mid-South Environmental Services — 24/7 Environmental Emergency Response"
+                className="top-hero-image hero-mobile"
+                fetchpriority="high"
+              />
+              {/* Desktop navigation overlays — keyboard-focusable, visible on :focus */}
+              <nav aria-label="Desktop hero navigation" className="hero-nav-overlay">
+                <Link to="/" className="invisible-hero-link" style={{ left: '0%', width: '18%', height: '14%' }} aria-label="Mid-South Environmental Services — Home" />
+                <Link to="/" className="invisible-hero-link" style={{ left: '20%', width: '11%', height: '14%' }} aria-label="Home" />
+                <Link to="/about" className="invisible-hero-link" style={{ left: '33%', width: '11%', height: '14%' }} aria-label="About Us" />
+                <Link to="/services" className="invisible-hero-link" style={{ left: '45%', width: '11%', height: '14%' }} aria-label="Services" />
+                <Link to="/contact" className="invisible-hero-link" style={{ left: '57%', width: '13%', height: '14%' }} aria-label="Contact Us" />
+                <a href="tel:8446374855" className="invisible-hero-link" style={{ left: '76%', width: '24%', height: '14%' }} aria-label="Call 844-637-4855" />
+                <Link to="/services" className="invisible-hero-link" style={{ left: '3%', top: '74%', width: '24%', height: '17%' }} aria-label="View Services" />
+              </nav>
             </div>
           </section>
         </>
       ) : (
         <Nav />
       )}
-      {children}
+
+      <main id="main-content" tabIndex="-1">
+        <Suspense fallback={<div className="page-loading" aria-live="polite">Loading…</div>}>
+          {children}
+        </Suspense>
+      </main>
+
       <Footer />
     </>
   );
@@ -72,16 +89,19 @@ function AppLayout({ children }) {
 function App() {
   return (
     <BrowserRouter>
-      <AppLayout>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/about" element={<AboutUs />} />
-          <Route path="/services" element={<Services />} />
-          <Route path="/locations" element={<Locations />} />
-          <Route path="/contact" element={<ContactUs />} />
-          <Route path="/past-projects" element={<PastProjects />} />
-        </Routes>
-      </AppLayout>
+      <ErrorBoundary>
+        <AppLayout>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/about" element={<AboutUs />} />
+            <Route path="/services" element={<Services />} />
+            <Route path="/locations" element={<Locations />} />
+            <Route path="/contact" element={<ContactUs />} />
+            <Route path="/past-projects" element={<PastProjects />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </AppLayout>
+      </ErrorBoundary>
     </BrowserRouter>
   );
 }

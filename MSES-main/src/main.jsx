@@ -2,6 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
+import { initClarity } from './lib/clarity.js'
 
 const GA4_MEASUREMENT_ID = import.meta.env.VITE_GA4_MEASUREMENT_ID || import.meta.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 const GSC_VERIFICATION = import.meta.env.VITE_GSC_VERIFICATION || import.meta.env.NEXT_PUBLIC_GSC_VERIFICATION;
@@ -33,6 +34,8 @@ if (GA4_MEASUREMENT_ID) {
   window.gtag('js', new Date());
   window.gtag('config', GA4_MEASUREMENT_ID, { send_page_view: false });
 }
+
+initClarity();
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

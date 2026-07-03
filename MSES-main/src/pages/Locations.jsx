@@ -32,7 +32,7 @@ function Locations() {
         <p>Mid-South Environmental Services provides regional coverage across Mississippi and Arkansas, supporting emergency response and planned operations for railroad, industrial, transportation, and marine environments.</p>
       </section>
 
-      <section>
+      <section className="map-section">
         <p className="map-helper-text">Regional Coverage</p>
         <Map />
       </section>

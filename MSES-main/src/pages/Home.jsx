@@ -66,9 +66,7 @@ function Home() {
 
       {/* Locations Section */}
       <section className="section-locations">
-        <div className="section-inner">
-          <Map />
-        </div>
+        <Map />
       </section>
 
     </div>

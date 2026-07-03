@@ -11,7 +11,7 @@ const DEFAULT_KEYWORDS = 'environmental services, emergency response, industrial
  * @param {string} [config.image] - Open Graph / Twitter image URL
  * @param {string} [config.ogType] - Open Graph type (default: website)
  */
-export function useSEO({ title, description, canonical, image = 'https://www.mses.online/newhero.png', ogType = 'website' }) {
+export function useSEO({ title, description, canonical, image = 'https://www.mses.online/faviconshare.png.jpeg', ogType = 'website' }) {
   useEffect(() => {
     document.title = title;
 

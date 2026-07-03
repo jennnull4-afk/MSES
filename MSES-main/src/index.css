@@ -499,7 +499,9 @@ section:last-child {
 /* Static Map Component */
 .static-map-container {
   position: relative;
-  border-radius: 10px;
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  border-radius: 0;
   overflow: hidden;
   margin-bottom: 1.5rem;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);

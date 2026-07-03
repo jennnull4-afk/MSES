@@ -1,8 +1,11 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 
 function Nav() {
+  const { pathname } = useLocation();
+  const isHome = pathname === '/';
+
   return (
-    <header className="site-header">
+    <header className={`site-header${isHome ? '' : ' site-header--light'}`}>
       <div className="header-main">
         <NavLink to="/" className="header-logo">
           <img src="/MSES-Master-Logo.png" alt="Mid-South Environmental Services" />

@@ -38,43 +38,6 @@ function Locations() {
       </section>
 
       <section>
-        <h2>Office & Response Locations</h2>
-        <div className="locations-grid">
-          <div className="location-card" id="location-southaven">
-            <h3>Corporate Office</h3>
-            <address>
-              8465 Hamilton Rd<br />
-              Southaven, MS 38671
-            </address>
-          </div>
-
-          <div className="location-card" id="location-jacksonville">
-            <h3>Little Rock / Jacksonville, AR</h3>
-            <address>
-              2600 W Main St<br />
-              Jacksonville, AR 72076
-            </address>
-          </div>
-
-          <div className="location-card" id="location-texarkana">
-            <h3>Texarkana, AR</h3>
-            <address>
-              3939 E Ninth St<br />
-              Texarkana, AR 71854
-            </address>
-          </div>
-
-          <div className="location-card" id="location-fulton">
-            <h3>Fulton, MS</h3>
-            <address>
-              100 Access Rd<br />
-              Fulton, MS 38843
-            </address>
-          </div>
-        </div>
-      </section>
-
-      <section>
         <p className="closing-text">Additional response coverage is available throughout the Mid-South region depending on incident type and operational needs.</p>
       </section>
     </div>
